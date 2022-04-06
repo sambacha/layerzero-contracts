@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/sambacha/layerzero-contracts/issues"
   },
-  "homepage": "https://github.com/sambacha/layerzero-contracts#readme"
+  "homepage": "https://github.com/sambacha/layerzero-contracts#readme",
+  "dependencies": {
+    "@openzeppelin/contracts": "4.5.0"
+  }
 }

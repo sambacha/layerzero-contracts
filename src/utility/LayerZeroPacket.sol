@@ -2,7 +2,7 @@
 
 pragma solidity 0.7.6;
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "../vendor/SafeMath.sol";
 
 library LayerZeroPacket {
     struct Packet {

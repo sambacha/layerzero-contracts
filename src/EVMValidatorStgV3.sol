@@ -3,7 +3,7 @@
 pragma solidity 0.7.6;
 pragma abicoder v2;
 
-import "@layerzerolabs/proof-evm/contracts/MPTValidatorStgV3.sol";
+import "./MPTValidatorStgV3.sol";
 
 contract EVMValidatorStgV3 is MPTValidatorStgV3 {
     constructor (address _stargateBridgeAddress, address _stgTokenAddress, uint16 _localChainId) MPTValidatorStgV3(_stargateBridgeAddress, _stgTokenAddress, _localChainId) {}
