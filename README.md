@@ -1,10 +1,12 @@
-# [relay.bond](#)
+# LayerZero Contracts
 
 > LayerZero Relayer Service Framework
 
 ## Overview
 
-> TODO
+> LayerZero Contracts
+
+These contracts are sourced from Etherscan and reproduced here in buildable form. The current LayerZero repo does not have some of these contracts published for whatever reason.
 
 ## License
 
