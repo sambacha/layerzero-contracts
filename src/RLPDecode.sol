@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // https://github.com/hamdiallam/solidity-rlp
 
-pragma solidity ^0.7.0;
+pragma solidity ^0.8.0;
 
 library RLPDecode {
     uint8 constant STRING_SHORT_START = 0x80;
@@ -228,7 +228,7 @@ library RLPDecode {
         // 1 byte for the length prefix
         require(item.len == 21, "RLPDecoder toAddress invalid length");
 
-        return address(toUint(item));
+        return address(uint160(toUint(item)));
     }
 
     function toUint(RLPItem memory item) internal pure returns (uint) {
