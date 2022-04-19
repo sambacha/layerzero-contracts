@@ -11,6 +11,7 @@
  * @param wallet Signer
  * @param provider SecureRPC Provider
  */
+
 export async function watchRelayTx(
   relayTx: RelayTransaction,
   wallet: Wallet,
@@ -69,7 +70,7 @@ function lookupLog(
     if (NETWORK_NAME !== "mainnet") {
     }
 
-    // Did we find it?
+    // @dev Did we find it?
     if (relayTxId == recordedRelayTxId) {
       etherscanLink(result[i]["transactionHash"] as string);
 
@@ -81,8 +82,9 @@ function lookupLog(
 
   return 0;
 }
+
 /**
- * Simple function to wait
+ * @function wait
  * @param ms Milliseconds
  */
 async function wait(ms: number) {
@@ -92,4 +94,3 @@ async function wait(ms: number) {
     }, ms);
   });
 }
-Terms
