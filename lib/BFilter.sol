@@ -1,7 +1,6 @@
 /// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-
 import "./IFilter.sol";
 
 abstract contract BaseFilter is IFilter {
@@ -11,4 +10,4 @@ abstract contract BaseFilter is IFilter {
             method := mload(add(_data, 0x20))
         }
     }
-} 
+}
