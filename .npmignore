@@ -1,0 +1,5 @@
+justfile
+.github/
+scripts
+out
+cache

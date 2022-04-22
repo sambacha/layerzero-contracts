@@ -1,12 +1,14 @@
 {
   "name": "layerzero-contracts",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.2.0",
+  "description": "layerzero ethereum contracts",
   "directories": {
-    "test": "test"
+    "test": "test",
+    "src": "src",
+    "typechain": "typechain"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "typechain": "npx typechain --discriminate-types --target ethers-v5 \"out/**/*.json\""
   },
   "repository": {
     "type": "git",
@@ -21,5 +23,24 @@
   "homepage": "https://github.com/sambacha/layerzero-contracts#readme",
   "dependencies": {
     "@openzeppelin/contracts": "4.5.0"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.5",
+    "@typechain/ethers-v5": "^10.0.0",
+    "@typechain/hardhat": "^6.0.0",
+    "@types/node": "^16",
+    "dotenv": "^16.0.0",
+    "ethers": "^5.6.4",
+    "hardhat": "^2.9.3",
+    "hardhat-abi-exporter": "^2.8.0",
+    "hardhat-typechain": "^0.3.5",
+    "prettier": "^2.6.2",
+    "prettier-config-solidity": "^1.7.0",
+    "prettier-plugin-solidity": "^1.0.0-beta.19",
+    "ts-generator": "^0.1.1",
+    "ts-node": "^10.7.0",
+    "tslib": "^2.3.1",
+    "typechain": "^8.0.0",
+    "typescript": "4.6.3"
   }
 }
