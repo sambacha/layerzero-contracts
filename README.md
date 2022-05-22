@@ -71,6 +71,72 @@ allow user to send a message
 
 A valid delivery can only happen if there's no collusion between `Oracle` and `Relayer`
 
+## LayerZero Error Codes
+
+###  LayerZero: only endpoint
+
+> Only the endpoint can be the caller of the function.
+
+###  LayerZero: invalid relayer
+
+> Relayer delivering the message is NOT the relayer the UA has configured.
+
+###  LayerZero: invalid inbound proof library
+
+> User Application has configured an invalid proof library version for remote chainId
+
+###  LayerZero: not enough block confirmations
+
+> During message delivery, the Oracle didnt wait enough block confirmations as specified by the UA.
+
+###  LayerZero: \_packet.ulnAddress is invalid
+
+> Invalid source sender of the message.
+
+###  LayerZero: invalid dst address
+
+> The LayerZero message specifies a different destination contract address than the relayer.
+
+###  LayerZero: must be paid by sender or origin
+
+> Endpoint.send() was flagged to be paid in tokens, but the address is invalid.
+
+###  LayerZero: not enough native for fees
+
+> User Application needs to send more msg.value (see: Endpoint.estimateFees())
+
+###  LayerZero: failed to refund
+
+> The specified \_refundAddress is not payable, or invalid. (Try sending the exact amount)
+
+###  LayerZero: oracle data can only update if it has more confirmations
+
+> The Oracle tried to update the data, but it was identical to what already existed.
+
+###  LayerZero: invalid inbound proof library version
+
+> setConfig() cannot set the specified inbound proof library version
+
+###  LayerZero: invalid outbound proof type
+
+> setConfig() cannot set the specified outbound proof type
+
+###  LayerZero: Invalid config type
+
+> setConfig() does not know how to set this value
+
+###  LayerZero: only treasury
+
+> withdrawZRO() called by invalid address
+
+###  LayerZero: only relayerFee contract
+
+> Only a certain address can call withdraw on the UltraLightNode
+
+###  LayerZero: unsupported withdraw type
+
+> withdrawZRO() called with invalid type
+
 
 ## License
 
