@@ -6,8 +6,8 @@ import "../ONFT721.sol";
 
 /// @title Interface of the UniversalONFT standard
 contract UniversalONFT721 is ONFT721 {
-    uint public nextMintId;
-    uint public maxMintId;
+    uint256 public nextMintId;
+    uint256 public maxMintId;
 
     /// @notice Constructor for the UniversalONFT
     /// @param _name the name of the token
@@ -15,7 +15,13 @@ contract UniversalONFT721 is ONFT721 {
     /// @param _layerZeroEndpoint handles message transmission across chains
     /// @param _startMintId the starting mint number on this chain
     /// @param _endMintId the max number of mints on this chain
-    constructor(string memory _name, string memory _symbol, address _layerZeroEndpoint, uint _startMintId, uint _endMintId) ONFT721(_name, _symbol, _layerZeroEndpoint) {
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        address _layerZeroEndpoint,
+        uint256 _startMintId,
+        uint256 _endMintId
+    ) ONFT721(_name, _symbol, _layerZeroEndpoint) {
         nextMintId = _startMintId;
         maxMintId = _endMintId;
     }
@@ -24,7 +30,7 @@ contract UniversalONFT721 is ONFT721 {
     function mint() external payable {
         require(nextMintId <= maxMintId, "UniversalONFT721: max mint limit reached");
 
-        uint newId = nextMintId;
+        uint256 newId = nextMintId;
         nextMintId++;
 
         _safeMint(msg.sender, newId);

@@ -7,9 +7,18 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 
 // allow OFT to pause all cross-chain transactions
 contract PausableOFT is OFT, Pausable {
-    constructor(string memory _name, string memory _symbol, address _lzEndpoint) OFT(_name, _symbol, _lzEndpoint) {}
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        address _lzEndpoint
+    ) OFT(_name, _symbol, _lzEndpoint) {}
 
-    function _debitFrom(address _from, uint16 _dstChainId, bytes memory _toAddress, uint _amount) internal virtual override whenNotPaused {
+    function _debitFrom(
+        address _from,
+        uint16 _dstChainId,
+        bytes memory _toAddress,
+        uint256 _amount
+    ) internal virtual override whenNotPaused {
         super._debitFrom(_from, _dstChainId, _toAddress, _amount);
     }
 
