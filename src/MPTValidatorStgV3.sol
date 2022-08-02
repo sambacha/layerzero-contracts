@@ -12,22 +12,26 @@ contract MPTValidatorStgV3 is ILayerZeroValidationLibrary {
     using RLPDecode for RLPDecode.RLPItem;
     using RLPDecode for RLPDecode.Iterator;
     using Buffer for Buffer.buffer;
-    using SafeMath for uint;
+    using SafeMath for uint256;
 
-    bytes32 public constant PACKET_SIGNATURE = 0xe8d23d927749ec8e512eb885679c2977d57068839d8cca1a85685dbbea0648f6;
+    bytes32 public constant PACKET_SIGNATURE =
+        0xe8d23d927749ec8e512eb885679c2977d57068839d8cca1a85685dbbea0648f6;
 
-    address immutable public stargateBridgeAddress;
-    address immutable public stgTokenAddress;
-    uint16 immutable public localChainId;
+    address public immutable stargateBridgeAddress;
+    address public immutable stgTokenAddress;
+    uint16 public immutable localChainId;
 
-
-    constructor (address _stargateBridgeAddress, address _stgTokenAddress, uint16 _localChainId) {
+    constructor(
+        address _stargateBridgeAddress,
+        address _stgTokenAddress,
+        uint16 _localChainId
+    ) {
         stargateBridgeAddress = _stargateBridgeAddress;
         stgTokenAddress = _stgTokenAddress;
         localChainId = _localChainId;
     }
 
-    struct ULNLog{
+    struct ULNLog {
         bytes32 contractAddress;
         bytes32 topicZeroSig;
         bytes data;
@@ -48,19 +52,35 @@ contract MPTValidatorStgV3 is ILayerZeroValidationLibrary {
         uint256 idealBalance;
     }
 
-    function validateProof(bytes32 _receiptsRoot, bytes calldata _transactionProof, uint _remoteAddressSize) external view override returns (LayerZeroPacket.Packet memory) {
-        (uint16 remoteChainId, bytes[] memory proof, uint[] memory receiptSlotIndex, uint logIndex) = abi.decode(_transactionProof, (uint16, bytes[], uint[], uint));
+    function validateProof(
+        bytes32 _receiptsRoot,
+        bytes calldata _transactionProof,
+        uint256 _remoteAddressSize
+    ) external view override returns (LayerZeroPacket.Packet memory) {
+        (
+            uint16 remoteChainId,
+            bytes[] memory proof,
+            uint256[] memory receiptSlotIndex,
+            uint256 logIndex
+        ) = abi.decode(_transactionProof, (uint16, bytes[], uint256[], uint256));
 
         ULNLog memory log = _getVerifiedLog(_receiptsRoot, receiptSlotIndex, logIndex, proof);
         require(log.topicZeroSig == PACKET_SIGNATURE, "ProofLib: packet not recognized"); //data
 
-        LayerZeroPacket.Packet memory packet = _getPacket(log.data, remoteChainId, _remoteAddressSize, log.contractAddress);
+        LayerZeroPacket.Packet memory packet = _getPacket(
+            log.data,
+            remoteChainId,
+            _remoteAddressSize,
+            log.contractAddress
+        );
 
         require(packet.dstChainId == localChainId, "ProofLib: invalid destination chain ID");
 
-        if (packet.dstAddress == stargateBridgeAddress) packet.payload = _secureStgPayload(packet.payload);
+        if (packet.dstAddress == stargateBridgeAddress)
+            packet.payload = _secureStgPayload(packet.payload);
 
-        if (packet.dstAddress == stgTokenAddress) packet.payload = _secureStgTokenPayload(packet.payload);
+        if (packet.dstAddress == stgTokenAddress)
+            packet.payload = _secureStgTokenPayload(packet.payload);
 
         return packet;
     }
@@ -70,7 +90,9 @@ contract MPTValidatorStgV3 is ILayerZeroValidationLibrary {
 
         address toAddress = address(0);
         if (toAddressBytes.length > 0) {
-            assembly { toAddress := mload(add(toAddressBytes, 20))}
+            assembly {
+                toAddress := mload(add(toAddressBytes, 20))
+            }
         }
 
         if (toAddress == address(0)) {
@@ -86,7 +108,9 @@ contract MPTValidatorStgV3 is ILayerZeroValidationLibrary {
     function _secureStgPayload(bytes memory _payload) internal view returns (bytes memory) {
         // functionType is uint8 even though the encoding will take up the side of uint256
         uint8 functionType;
-        assembly { functionType := mload(add(_payload, 32)) }
+        assembly {
+            functionType := mload(add(_payload, 32))
+        }
 
         // TYPE_SWAP_REMOTE == 1 && only if the payload has a payload
         // only swapRemote inside of stargate can call sgReceive on an user supplied to address
@@ -102,26 +126,42 @@ contract MPTValidatorStgV3 is ILayerZeroValidationLibrary {
                 SwapObj memory s,
                 bytes memory toAddressBytes,
                 bytes memory contractCallPayload
-            ) = abi.decode(_payload, (uint8, uint256, uint256, uint256, CreditObj, SwapObj, bytes, bytes));
+            ) = abi.decode(
+                    _payload,
+                    (uint8, uint256, uint256, uint256, CreditObj, SwapObj, bytes, bytes)
+                );
 
             // if contractCallPayload.length > 0 need to check if the to address is a contract or not
             if (contractCallPayload.length > 0) {
                 // otherwise, need to check if the payload can be delivered to the toAddress
                 address toAddress = address(0);
                 if (toAddressBytes.length > 0) {
-                    assembly { toAddress := mload(add(toAddressBytes, 20)) }
+                    assembly {
+                        toAddress := mload(add(toAddressBytes, 20))
+                    }
                 }
 
                 // check if the toAddress is a contract. We are not concerned about addresses that pretend to be wallets. because worst case we just delete their payload if being malicious
                 // we can guarantee that if a size > 0, then the contract is definitely a contract address in this context
-                uint size;
-                assembly { size := extcodesize(toAddress) }
+                uint256 size;
+                assembly {
+                    size := extcodesize(toAddress)
+                }
 
                 if (size == 0) {
                     // size == 0 indicates its not a contract, payload wont be delivered
                     // secure the _payload to make sure funds can be delivered to the toAddress
                     bytes memory newToAddressBytes = abi.encodePacked(toAddress);
-                    bytes memory securePayload = abi.encode(functionType, srcPoolId, dstPoolId, dstGasForCall, c, s, newToAddressBytes, bytes(""));
+                    bytes memory securePayload = abi.encode(
+                        functionType,
+                        srcPoolId,
+                        dstPoolId,
+                        dstGasForCall,
+                        c,
+                        s,
+                        newToAddressBytes,
+                        bytes("")
+                    );
                     return securePayload;
                 }
             }
@@ -131,21 +171,26 @@ contract MPTValidatorStgV3 is ILayerZeroValidationLibrary {
         return _payload;
     }
 
-    function secureStgTokenPayload(bytes memory _payload) external pure returns(bytes memory) {
+    function secureStgTokenPayload(bytes memory _payload) external pure returns (bytes memory) {
         return _secureStgTokenPayload(_payload);
     }
 
-    function secureStgPayload(bytes memory _payload) external view returns(bytes memory) {
+    function secureStgPayload(bytes memory _payload) external view returns (bytes memory) {
         return _secureStgPayload(_payload);
     }
 
-    function _getVerifiedLog(bytes32 hashRoot, uint[] memory paths, uint logIndex, bytes[] memory proof) internal pure returns(ULNLog memory) {
+    function _getVerifiedLog(
+        bytes32 hashRoot,
+        uint256[] memory paths,
+        uint256 logIndex,
+        bytes[] memory proof
+    ) internal pure returns (ULNLog memory) {
         require(paths.length == proof.length, "ProofLib: invalid proof size");
 
         RLPDecode.RLPItem memory item;
         bytes memory proofBytes;
 
-        for (uint i = 0; i < proof.length; i++) {
+        for (uint256 i = 0; i < proof.length; i++) {
             proofBytes = proof[i];
             require(hashRoot == keccak256(proofBytes), "ProofLib: invalid hashlink");
             item = RLPDecode.toRlpItem(proofBytes).safeGetItemByIndex(paths[i]);
@@ -154,7 +199,7 @@ contract MPTValidatorStgV3 is ILayerZeroValidationLibrary {
 
         // burning status + gasUsed + logBloom
         RLPDecode.RLPItem memory logItem = item.typeOffset().safeGetItemByIndex(3);
-        RLPDecode.Iterator memory it =  logItem.safeGetItemByIndex(logIndex).iterator();
+        RLPDecode.Iterator memory it = logItem.safeGetItemByIndex(logIndex).iterator();
         ULNLog memory log;
         log.contractAddress = bytes32(it.next().toUint());
         log.topicZeroSig = bytes32(it.next().getItemByIndex(0).toUint());
@@ -164,23 +209,33 @@ contract MPTValidatorStgV3 is ILayerZeroValidationLibrary {
     }
 
     // profiling and test
-    function getVerifyLog(bytes32 hashRoot, uint[] memory receiptSlotIndex, uint logIndex, bytes[] memory proof) external pure returns(ULNLog memory){
+    function getVerifyLog(
+        bytes32 hashRoot,
+        uint256[] memory receiptSlotIndex,
+        uint256 logIndex,
+        bytes[] memory proof
+    ) external pure returns (ULNLog memory) {
         return _getVerifiedLog(hashRoot, receiptSlotIndex, logIndex, proof);
     }
 
-    function getPacket(bytes memory data, uint16 srcChain, uint sizeOfSrcAddress, bytes32 ulnAddress) external pure returns(LayerZeroPacket.Packet memory) {
+    function getPacket(
+        bytes memory data,
+        uint16 srcChain,
+        uint256 sizeOfSrcAddress,
+        bytes32 ulnAddress
+    ) external pure returns (LayerZeroPacket.Packet memory) {
         return _getPacket(data, srcChain, sizeOfSrcAddress, ulnAddress);
     }
 
     function _getPacket(
         bytes memory data,
         uint16 srcChain,
-        uint sizeOfSrcAddress,
+        uint256 sizeOfSrcAddress,
         bytes32 ulnAddress
     ) internal pure returns (LayerZeroPacket.Packet memory) {
         uint16 dstChainId;
         address dstAddress;
-        uint size;
+        uint256 size;
         uint64 nonce;
 
         // The log consists of the destination chain id and then a bytes payload
@@ -201,10 +256,19 @@ contract MPTValidatorStgV3 is ILayerZeroValidationLibrary {
         srcAddressBuffer.init(sizeOfSrcAddress);
         srcAddressBuffer.writeRawBytes(0, data, 136, sizeOfSrcAddress); // 128 + 8
 
-        uint payloadSize = size.sub(20).sub(sizeOfSrcAddress);
+        uint256 payloadSize = size.sub(20).sub(sizeOfSrcAddress);
         Buffer.buffer memory payloadBuffer;
         payloadBuffer.init(payloadSize);
         payloadBuffer.writeRawBytes(0, data, sizeOfSrcAddress.add(156), payloadSize); // 148 + 8
-        return LayerZeroPacket.Packet(srcChain, dstChainId, nonce, dstAddress, srcAddressBuffer.buf, ulnAddress, payloadBuffer.buf);
+        return
+            LayerZeroPacket.Packet(
+                srcChain,
+                dstChainId,
+                nonce,
+                dstAddress,
+                srcAddressBuffer.buf,
+                ulnAddress,
+                payloadBuffer.buf
+            );
     }
 }

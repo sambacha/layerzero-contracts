@@ -9,9 +9,14 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
  * @dev Extension of {OFT} that adds a global cap to the supply of tokens across all chains.
  */
 contract GlobalCappedOFT is BasedOFT, ERC20Capped {
-    constructor(string memory _name, string memory _symbol, uint _cap, address _lzEndpoint) BasedOFT(_name, _symbol, _lzEndpoint) ERC20Capped(_cap) {}
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        uint256 _cap,
+        address _lzEndpoint
+    ) BasedOFT(_name, _symbol, _lzEndpoint) ERC20Capped(_cap) {}
 
-    function _mint(address account, uint amount) internal virtual override(ERC20, ERC20Capped) {
+    function _mint(address account, uint256 amount) internal virtual override(ERC20, ERC20Capped) {
         ERC20Capped._mint(account, amount);
     }
 }

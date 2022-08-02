@@ -15,9 +15,9 @@ library UltraLightNodeEVMDecoder {
         bytes data;
     }
 
-    function getReceiptLog(bytes memory data, uint logIndex) internal pure returns (Log memory) {
+    function getReceiptLog(bytes memory data, uint256 logIndex) internal pure returns (Log memory) {
         RLPDecode.Iterator memory it = RLPDecode.toRlpItem(data).iterator();
-        uint idx;
+        uint256 idx;
         while (it.hasNext()) {
             if (idx == 3) {
                 return toReceiptLog(it.next().getItemByIndex(logIndex).toRlpBytes());
@@ -31,7 +31,7 @@ library UltraLightNodeEVMDecoder {
         RLPDecode.Iterator memory it = RLPDecode.toRlpItem(data).iterator();
         Log memory log;
 
-        uint idx;
+        uint256 idx;
         while (it.hasNext()) {
             if (idx == 0) {
                 log.contractAddress = it.next().toAddress();

@@ -5,8 +5,7 @@
   "directories": {
     "test": "test"
   },
-  "scripts": {
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sambacha/layerzero-contracts.git"
@@ -20,5 +19,9 @@
   "homepage": "https://github.com/sambacha/layerzero-contracts#readme",
   "dependencies": {
     "@openzeppelin/contracts": "4.5.0"
+  },
+  "devDependencies": {
+    "prettier": "^2.7.1",
+    "prettier-plugin-solidity": "^1.0.0-dev.23"
   }
 }
